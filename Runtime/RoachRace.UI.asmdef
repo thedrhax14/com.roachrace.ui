@@ -1,0 +1,24 @@
+{
+    "name": "RoachRace.UI",
+    "rootNamespace": "RoachRace.UI",
+    "references": [
+        "Unity.TextMeshPro",
+        "Unity.InputSystem",
+        "UnityEngine.UI",
+        "RoachRace.Data",
+        "RoachRace.Controls",
+        "RoachRace.Interaction",
+        "DissonanceVoip",
+        "DissonanceFMOD_Recording",
+        "FishNet.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
