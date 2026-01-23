@@ -9,6 +9,7 @@ namespace RoachRace.UI.Models
     [CreateAssetMenu(fileName = "LoadingManager", menuName = "RoachRace/UI/Loading Manager")]
     public class LoadingManager : UIModel
     {
+        public static LoadingManager Instance { get; private set; }
         [Header("Observable Properties")]
         public Observable<bool> IsLoading = new Observable<bool>(false);
         public Observable<string> LoadingMessage = new Observable<string>("");
@@ -32,11 +33,6 @@ namespace RoachRace.UI.Models
         {
             _loadingOperationsCount = Mathf.Max(0, _loadingOperationsCount - 1);
             UpdateLoadingState();
-            
-            if (_loadingOperationsCount == 0)
-            {
-                LoadingMessage.Value = "";
-            }
         }
 
         /// <summary>
@@ -52,6 +48,10 @@ namespace RoachRace.UI.Models
         private void UpdateLoadingState()
         {
             IsLoading.Value = _loadingOperationsCount > 0;
+            if (_loadingOperationsCount == 0)
+            {
+                LoadingMessage.Value = "";
+            }
         }
 
         protected override void Initialize()
@@ -60,6 +60,7 @@ namespace RoachRace.UI.Models
             _loadingOperationsCount = 0;
             IsLoading.Value = false;
             LoadingMessage.Value = "";
+            Instance = this;
         }
     }
 }

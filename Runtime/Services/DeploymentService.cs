@@ -36,10 +36,7 @@ namespace RoachRace.UI.Services
 
         private IEnumerator CreateDeploymentCoroutine(string serverName)
         {
-            if (loadingManager != null)
-            {
-                loadingManager.StartLoading("Creating server...");
-            }
+            loadingManager.StartLoading("Creating server...");
 
             serversModel?.ClearError();
 
@@ -69,13 +66,10 @@ namespace RoachRace.UI.Services
                     }
                     catch (System.Exception e)
                     {
-                        serversModel?.SetError($"Parse error: {e.Message}");
+                        serversModel.SetError($"Parse error: {e.Message}");
                         Debug.LogError($"Error parsing deployment response: {e.Message}");
                         
-                        if (loadingManager != null)
-                        {
-                            loadingManager.EndLoading();
-                        }
+                        loadingManager.EndLoading();
                     }
 
                     if (response != null && !string.IsNullOrEmpty(response.request_id))
@@ -87,25 +81,19 @@ namespace RoachRace.UI.Services
                     }
                     else if (response != null)
                     {
-                        serversModel?.SetError("Invalid deployment response");
+                        serversModel.SetError("Invalid deployment response");
                         Debug.LogError("Failed to get request_id from deployment response");
                         
-                        if (loadingManager != null)
-                        {
-                            loadingManager.EndLoading();
-                        }
+                        loadingManager.EndLoading();
                     }
                 }
                 else
                 {
                     string errorMsg = $"Deployment failed: {webRequest.error}";
-                    serversModel?.SetError(errorMsg);
+                    serversModel.SetError(errorMsg);
                     Debug.LogError($"Failed to create deployment: {webRequest.error}\nResponse: {webRequest.downloadHandler.text}");
                     
-                    if (loadingManager != null)
-                    {
-                        loadingManager.EndLoading();
-                    }
+                    loadingManager.EndLoading();
                 }
             }
         }
@@ -121,10 +109,7 @@ namespace RoachRace.UI.Services
             {
                 attempts++;
                 
-                if (loadingManager != null)
-                {
-                    loadingManager.LoadingMessage.Value = $"Deploying server... (attempt {attempts})";
-                }
+                loadingManager.LoadingMessage.Value = $"Deploying server... (attempt {attempts})";
 
                 yield return new WaitForSeconds(STATUS_CHECK_INTERVAL);
 
@@ -154,7 +139,7 @@ namespace RoachRace.UI.Services
                                 }
                                 else if (status.error)
                                 {
-                                    serversModel?.SetError($"Deployment error: {status.error_detail}");
+                                    serversModel.SetError($"Deployment error: {status.error_detail}");
                                     Debug.LogError($"Deployment error: {status.error_detail}");
                                     break;
                                 }
@@ -172,14 +157,11 @@ namespace RoachRace.UI.Services
                 }
             }
 
-            if (loadingManager != null)
-            {
-                loadingManager.EndLoading();
-            }
+            loadingManager.EndLoading();
 
             if (!isReady && attempts >= maxAttempts)
             {
-                serversModel?.SetError("Deployment timeout - server took too long to start");
+                serversModel.SetError("Deployment timeout - server took too long to start");
                 Debug.LogError("Deployment timeout");
             }
         }
@@ -203,7 +185,7 @@ namespace RoachRace.UI.Services
             }
 
             // Create ServerDeployment and update the model
-            ServerDeployment deployment = new ServerDeployment
+            ServerDeployment deployment = new()
             {
                 request_id = status.request_id,
                 server_name = status.app_name,
@@ -213,10 +195,7 @@ namespace RoachRace.UI.Services
                 udp_port = udpPort
             };
 
-            if (serversModel != null)
-            {
-                serversModel.SelectServer(deployment);
-            }
+            serversModel.SelectServer(deployment);
 
             Debug.Log($"Server connection: {status.public_ip}:{udpPort}");
         }
