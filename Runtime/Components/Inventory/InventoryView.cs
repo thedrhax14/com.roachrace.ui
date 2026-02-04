@@ -27,10 +27,6 @@ namespace RoachRace.UI.Components.Inventory
         [Tooltip("ItemDatabase asset used to resolve item ids into UI icons.")]
         [SerializeField] private ItemDatabase itemDatabase;
 
-        [Header("Role Presentation")]
-        [Tooltip("If true, uses ghostIcon when available; otherwise uses survivorIcon.")]
-        [SerializeField] private bool useGhostIcons;
-
         [Header("UI")]
         [Tooltip("Optional. If assigned, visibility is controlled via CanvasGroup alpha/interactable. If not assigned, GameObject active state is used.")]
         [SerializeField] private CanvasGroup canvasGroup;
@@ -132,9 +128,7 @@ namespace RoachRace.UI.Components.Inventory
                         }
                         else
                         {
-                            icon = useGhostIcons ? emptyDef.ghostIcon : emptyDef.survivorIcon;
-                            if (icon == null)
-                                icon = emptyDef.survivorIcon;
+                            icon = emptyDef.icon;
 
                             if (icon == null)
                             {
@@ -161,9 +155,7 @@ namespace RoachRace.UI.Components.Inventory
                     else
                     {
                         // Choose icon by role, with survivor fallback.
-                        icon = useGhostIcons ? def.ghostIcon : def.survivorIcon;
-                        if (icon == null)
-                            icon = def.survivorIcon;
+                        icon = def.icon;
 
                         if (icon == null)
                         {
