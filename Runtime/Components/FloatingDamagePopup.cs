@@ -26,13 +26,11 @@ namespace RoachRace.UI.Components
         [SerializeField] private Gradient colorOverTime = new Gradient();
 
         private Vector3 _worldPosition;
-        private Vector3 _startScreenPosition;
         private CanvasGroup _canvasGroup;
         private float _elapsedTime;
 
         private void Start()
         {
-            _startScreenPosition = transform.position;
             _canvasGroup = GetComponent<CanvasGroup>();
             if (_canvasGroup == null)
             {
@@ -44,12 +42,8 @@ namespace RoachRace.UI.Components
 
         private void Update()
         {
-            // Update screen position based on world position (camera movement)
-            if (Camera.main != null)
-            {
-                Vector3 screenPos = Camera.main.WorldToScreenPoint(_worldPosition);
-                transform.position = screenPos;
-            }
+            Vector3 screenPos = Camera.main.WorldToScreenPoint(_worldPosition);
+            transform.position = screenPos;
         }
 
         public void Initialize(DamageEventData damageEvent)
@@ -81,9 +75,7 @@ namespace RoachRace.UI.Components
                 }
 
                 // Float upward (offset in screen space)
-                Vector3 screenOffset = Vector3.up * floatDistance * 100f * t; // Scale for screen space
-                transform.position = _startScreenPosition + screenOffset;
-
+                _worldPosition += 100f * floatDistance * t * Time.deltaTime * Vector3.up;
                 // Scale down
                 float scale = scaleCurve.Evaluate(t);
                 transform.localScale = Vector3.one * scale;
@@ -93,5 +85,12 @@ namespace RoachRace.UI.Components
 
             Destroy(gameObject);
         }
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(_worldPosition, 0.5f);
+        }
+#endif
     }
 }
