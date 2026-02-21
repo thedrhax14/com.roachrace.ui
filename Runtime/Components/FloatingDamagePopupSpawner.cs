@@ -81,7 +81,12 @@ namespace RoachRace.UI.Components
 
         private void SpawnDamagePopup(DamageEventData damageEvent)
         {
-            var popup = Instantiate(damagePopupPrefab, damageEvent.DamagePosition, Quaternion.identity);
+            var popup = Instantiate(damagePopupPrefab, transform);
+            
+            // Convert world position to screen position for UI placement
+            Vector3 screenPos = Camera.main.WorldToScreenPoint(damageEvent.DamagePosition);
+            popup.transform.position = screenPos;
+            
             popup.Initialize(damageEvent);
         }
     }

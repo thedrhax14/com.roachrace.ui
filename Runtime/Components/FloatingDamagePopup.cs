@@ -7,6 +7,7 @@ namespace RoachRace.UI.Components
 {
     /// <summary>
     /// Visual representation of a floating damage number that appears briefly and fades out.
+    /// Tracks world position to stay anchored to damage location in 3D space.
     /// </summary>
     public class FloatingDamagePopup : MonoBehaviour
     {
@@ -24,13 +25,14 @@ namespace RoachRace.UI.Components
         [SerializeField] private Color criticalDamageColor = Color.red;
         [SerializeField] private Gradient colorOverTime = new Gradient();
 
-        private Vector3 _startPosition;
+        private Vector3 _worldPosition;
+        private Vector3 _startScreenPosition;
         private CanvasGroup _canvasGroup;
         private float _elapsedTime;
 
         private void Start()
         {
-            _startPosition = transform.position;
+            _startScreenPosition = transform.position;
             _canvasGroup = GetComponent<CanvasGroup>();
             if (_canvasGroup == null)
             {
@@ -40,8 +42,21 @@ namespace RoachRace.UI.Components
             StartCoroutine(AnimatePopup());
         }
 
+        private void Update()
+        {
+            // Update screen position based on world position (camera movement)
+            if (Camera.main != null)
+            {
+                Vector3 screenPos = Camera.main.WorldToScreenPoint(_worldPosition);
+                transform.position = screenPos;
+            }
+        }
+
         public void Initialize(DamageEventData damageEvent)
         {
+            // Store world position for continuous tracking
+            _worldPosition = damageEvent.DamagePosition;
+            
             // Set damage text
             damageText.text = damageEvent.DamageInfo.Amount.ToString();
 
@@ -65,9 +80,9 @@ namespace RoachRace.UI.Components
                     _canvasGroup.alpha = fadeCurve.Evaluate(t);
                 }
 
-                // Float upward
-                Vector3 newPos = _startPosition + Vector3.up * floatDistance * t;
-                transform.position = newPos;
+                // Float upward (offset in screen space)
+                Vector3 screenOffset = Vector3.up * floatDistance * 100f * t; // Scale for screen space
+                transform.position = _startScreenPosition + screenOffset;
 
                 // Scale down
                 float scale = scaleCurve.Evaluate(t);
