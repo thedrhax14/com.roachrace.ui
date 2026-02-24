@@ -1,6 +1,6 @@
 {
   "name": "com.roachrace.ui",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "displayName": "RoachRace UI",
   "description": "UI components and models using observer pattern for RoachRace game. Provides reactive UI framework with observable data binding.",
   "unity": "2021.3",
