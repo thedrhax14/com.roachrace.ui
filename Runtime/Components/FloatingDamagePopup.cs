@@ -16,7 +16,7 @@ namespace RoachRace.UI.Components
 
         [Header("Animation Settings")]
         [SerializeField] private float duration = 1.5f;
-        [SerializeField] private float floatDistance = 1.0f;
+        [SerializeField] private AnimationCurve positionCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
         [SerializeField] private AnimationCurve fadeCurve = AnimationCurve.EaseInOut(0, 1, 1, 0);
         [SerializeField] private AnimationCurve scaleCurve = AnimationCurve.EaseInOut(0, 1, 1, 0.8f);
 
@@ -25,6 +25,7 @@ namespace RoachRace.UI.Components
         [SerializeField] private Color criticalDamageColor = Color.red;
         [SerializeField] private Gradient colorOverTime = new Gradient();
 
+        private Vector3 _initialPosition;
         private Vector3 _worldPosition;
         private CanvasGroup _canvasGroup;
         private float _elapsedTime;
@@ -50,6 +51,7 @@ namespace RoachRace.UI.Components
         {
             // Store world position for continuous tracking
             _worldPosition = damageEvent.DamagePosition;
+            _initialPosition = _worldPosition;
             
             // Set damage text
             damageText.text = damageEvent.DamageInfo.Amount.ToString();
@@ -75,7 +77,7 @@ namespace RoachRace.UI.Components
                 }
 
                 // Float upward (offset in screen space)
-                _worldPosition += 100f * floatDistance * t * Time.deltaTime * Vector3.up;
+                _worldPosition = _initialPosition + new Vector3(0, positionCurve.Evaluate(t), 0);
                 // Scale down
                 float scale = scaleCurve.Evaluate(t);
                 transform.localScale = Vector3.one * scale;
