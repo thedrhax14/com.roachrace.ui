@@ -9,10 +9,7 @@
     "com.unity.inputsystem": "1.14.2",
     "com.roachrace.data": "1.0.0"
   },
-  "keywords": [
-    "version": "1.0.6",
-    "roachrace"
-  ],
+  "keywords": [],
   "author": {
     "name": "RoachRace Team"
   }
