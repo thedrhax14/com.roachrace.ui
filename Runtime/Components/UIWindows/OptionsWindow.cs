@@ -53,16 +53,17 @@ namespace RoachRace.UI.Components
             base.OnDestroy();
         }
 
-        private void SetupObservers()
+        void SetupObservers()
         {
             _microphonesObserver = new MicrophonesObserver(this);
             _selectedMicrophoneObserver = new SelectedMicrophoneObserver(this);
 
+            optionsModel.SetSelectedMicrophone(PlayerPrefs.GetString("SelectedMicrophone", optionsModel.SelectedMicrophone.Value));
             optionsModel.AvailableMicrophones.Attach(_microphonesObserver);
             optionsModel.SelectedMicrophone.Attach(_selectedMicrophoneObserver);
         }
 
-        private void CleanupObservers()
+        void CleanupObservers()
         {
             if (optionsModel != null)
             {
@@ -71,7 +72,7 @@ namespace RoachRace.UI.Components
             }
         }
 
-        private void UpdateMicrophonesList(List<string> microphones)
+        void UpdateMicrophonesList(List<string> microphones)
         {
             if (microphoneDropdown == null) return;
 
@@ -82,23 +83,25 @@ namespace RoachRace.UI.Components
             // We can add a "Default" option at the top if we want to allow unsetting specific device.
             // But for now let's just list what we get.
             
-            List<string> options = new List<string>();
-            options.Add("Default"); // Always allow default
+            List<string> options = new()
+            {
+                "Default" // Always allow default
+            };
             if (microphones != null)
             {
                 options.AddRange(microphones);
             }
             
             microphoneDropdown.AddOptions(options);
-            
-            // Restore selection
-            UpdateSelectedMicrophone(optionsModel.SelectedMicrophone.Value);
         }
 
-        private void UpdateSelectedMicrophone(string selectedMic)
+        void UpdateSelectedMicrophone(string selectedMic)
         {
             if (microphoneDropdown == null) return;
-
+            if (string.IsNullOrEmpty(selectedMic))
+            {
+                Debug.LogWarning("[OptionsWindow] Selected microphone is null or empty. Defaulting to 'Default'.");
+            }
             string target = string.IsNullOrEmpty(selectedMic) ? "Default" : selectedMic;
             
             // Find index
@@ -113,14 +116,14 @@ namespace RoachRace.UI.Components
             }
             
             microphoneDropdown.SetValueWithoutNotify(index);
+            OnMicrophoneDropdownChanged(index); // Ensure service is updated with the current selection, especially on initial load.
         }
 
         private void OnMicrophoneDropdownChanged(int index)
         {
-            if (microphoneDropdown == null) return;
-            
             string selectedOption = microphoneDropdown.options[index].text;
             optionsService.SetMicrophone(selectedOption);
+            PlayerPrefs.SetString("SelectedMicrophone", selectedOption);
         }
 
         // Observer classes

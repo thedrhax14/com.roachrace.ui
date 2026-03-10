@@ -18,6 +18,8 @@ namespace RoachRace.UI.Services
                 Debug.LogError("[OptionsService] OptionsModel is not assigned! Please assign it in the Inspector.", gameObject);
                 throw new System.NullReferenceException($"[OptionsService] OptionsModel is null on GameObject '{gameObject.name}'. This component requires a OptionsModel to function.");
             }
+            optionsModel.SetSelectedMicrophone(PlayerPrefs.GetString("SelectedMicrophone", optionsModel.SelectedMicrophone.Value));
+            SetMicrophone(optionsModel.SelectedMicrophone.Value);
         }
 
         public void RefreshMicrophones()
@@ -64,8 +66,7 @@ namespace RoachRace.UI.Services
             {
                 comms.MicrophoneName = microphoneName;
             }
-            
-            optionsModel.SetSelectedMicrophone(microphoneName);
+            Debug.Log($"[OptionsService] Microphone set to: {comms.MicrophoneName ?? "Default"}");
         }
     }
 }
