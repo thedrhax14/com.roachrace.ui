@@ -7,8 +7,8 @@ using UnityEngine.UI;
 namespace RoachRace.UI.Core
 {
     /// <summary>
-    /// Centralized UI window management system with type-safe window retrieval
-    /// Windows auto-register on Awake
+    /// Centralized UI window management system with type-safe window retrieval.<br>
+    /// Windows auto-register on Awake and are typically opened via a per-window <see cref="Toggle"/> wired to show/hide behavior.
     /// </summary>
     public class UIWindowManager : MonoBehaviour
     {
@@ -24,7 +24,7 @@ namespace RoachRace.UI.Core
                     {
                         GameObject go = new GameObject("UIWindowManager");
                         _instance = go.AddComponent<UIWindowManager>();
-                        Debug.LogWarning("[UIWindowManager] No instance found - created new one");
+                        Debug.LogWarning($"[{nameof(UIWindowManager)}] No instance found - created new one", go);
                     }
                 }
                 return _instance;
@@ -50,7 +50,7 @@ namespace RoachRace.UI.Core
         {
             if (_instance != null && _instance != this)
             {
-                Debug.LogWarning("[UIWindowManager] Duplicate instance detected - destroying this one");
+                Debug.LogWarning($"[{nameof(UIWindowManager)}] Duplicate instance detected on '{gameObject.name}' - destroying this one", gameObject);
                 Destroy(gameObject);
                 return;
             }
@@ -67,20 +67,26 @@ namespace RoachRace.UI.Core
             
             if (_registeredWindows.ContainsKey(windowType))
             {
-                Debug.LogWarning($"[UIWindowManager] Window of type {windowType.Name} already registered - replacing", window);
+                Debug.LogWarning($"[{nameof(UIWindowManager)}] Window of type {windowType.Name} already registered - replacing on '{gameObject.name}'", window.gameObject);
             }
             
             _registeredWindows[windowType] = window;
             // Debug.Log($"[UIWindowManager] Registered window: {windowType.Name}", window);
 
-            if (window.OpenButton != null)
+            if (window.OpenToggle != null)
             {
-                window.OpenAction = () => ShowWindow(windowType);
-                window.OpenButton.onClick.AddListener(window.OpenAction);
+                window.OpenToggleAction = isOn =>
+                {
+                    if (isOn) {
+                        Debug.Log($"[{nameof(UIWindowManager)}] Open Toggle activated for window '{windowType.Name}' on '{gameObject.name}'", window.gameObject);
+                        ShowWindow(windowType);
+                    }
+                };
+                window.OpenToggle.onValueChanged.AddListener(window.OpenToggleAction);
             }
             else
             {
-                Debug.LogWarning($"[UIWindowManager] Open Button is not assigned for window '{windowType.Name}' on '{window.gameObject.name}'.", window.gameObject);
+                Debug.LogWarning($"[{nameof(UIWindowManager)}] Open Toggle is not assigned for window '{windowType.Name}' on '{window.gameObject.name}'.", window.gameObject);
             }
         }
 
@@ -94,14 +100,14 @@ namespace RoachRace.UI.Core
             
             if (_registeredWindows.ContainsKey(windowType))
             {
-                if (window.OpenButton != null && window.OpenAction != null)
+                if (window.OpenToggle != null && window.OpenToggleAction != null)
                 {
-                    window.OpenButton.onClick.RemoveListener(window.OpenAction);
-                    window.OpenAction = null;
+                    window.OpenToggle.onValueChanged.RemoveListener(window.OpenToggleAction);
+                    window.OpenToggleAction = null;
                 }
 
                 _registeredWindows.Remove(windowType);
-                Debug.Log($"[UIWindowManager] Unregistered window: {windowType.Name}");
+                Debug.Log($"[{nameof(UIWindowManager)}] Unregistered window: {windowType.Name} on '{gameObject.name}'", gameObject);
             }
         }
 
@@ -117,7 +123,7 @@ namespace RoachRace.UI.Core
                 return window as T;
             }
             
-            Debug.LogWarning($"[UIWindowManager] Window of type {windowType.Name} not found");
+            Debug.LogWarning($"[{nameof(UIWindowManager)}] Window of type {windowType.Name} not found on '{gameObject.name}'", gameObject);
             return null;
         }
 
@@ -147,7 +153,7 @@ namespace RoachRace.UI.Core
             }
             else
             {
-                Debug.LogWarning($"[UIWindowManager] Window of type {windowType.Name} not found");
+                Debug.LogWarning($"[{nameof(UIWindowManager)}] Window of type {windowType.Name} not found on '{gameObject.name}'", gameObject);
             }
         }
 
@@ -164,6 +170,22 @@ namespace RoachRace.UI.Core
         }
 
         /// <summary>
+        /// Hide a window by type (non-generic).
+        /// </summary>
+        /// <param name="windowType">The registered window type.</param>
+        public void HideWindow(Type windowType)
+        {
+            if (_registeredWindows.TryGetValue(windowType, out UIWindow window))
+            {
+                window.Hide();
+            }
+            else
+            {
+                Debug.LogWarning($"[{nameof(UIWindowManager)}] Window of type {windowType.Name} not found on '{gameObject.name}'", gameObject);
+            }
+        }
+
+        /// <summary>
         /// Hide all registered windows
         /// </summary>
         public void HideAllWindows()
@@ -172,7 +194,7 @@ namespace RoachRace.UI.Core
             {
                 window.Hide();
             }
-            Debug.Log("[UIWindowManager] All windows hidden");
+            Debug.Log($"[{nameof(UIWindowManager)}] All windows hidden on '{gameObject.name}'", gameObject);
         }
 
         /// <summary>
@@ -188,7 +210,7 @@ namespace RoachRace.UI.Core
         /// </summary>
         public void QuitApplication()
         {
-            Debug.Log("[UIWindowManager] Quitting application...");
+            Debug.Log($"[{nameof(UIWindowManager)}] Quitting application on '{gameObject.name}'", gameObject);
             #if UNITY_EDITOR
                 UnityEditor.EditorApplication.isPlaying = false;
             #else

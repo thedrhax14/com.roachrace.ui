@@ -25,7 +25,6 @@ namespace RoachRace.UI.Components
 
         [Header("UI Elements")]
         [SerializeField] private Button createRoomButton;
-        [SerializeField] private Button refreshButton;
         [SerializeField] private Transform serversContainer;
         [SerializeField] private ServerItem serverItemPrefab;
         [SerializeField] private TextMeshProUGUI errorText;
@@ -66,11 +65,6 @@ namespace RoachRace.UI.Components
                 createRoomButton.onClick.AddListener(OnCreateRoomClicked);
             }
 
-            if (refreshButton != null)
-            {
-                refreshButton.onClick.AddListener(OnRefreshClicked);
-            }
-
 #if UNITY_EDITOR
             if (hostLocalButton != null)
             {
@@ -90,11 +84,6 @@ namespace RoachRace.UI.Components
             if (createRoomButton != null)
             {
                 createRoomButton.onClick.RemoveListener(OnCreateRoomClicked);
-            }
-
-            if (refreshButton != null)
-            {
-                refreshButton.onClick.RemoveListener(OnRefreshClicked);
             }
 
 #if UNITY_EDITOR
