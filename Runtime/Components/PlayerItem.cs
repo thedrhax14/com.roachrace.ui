@@ -14,10 +14,7 @@ namespace RoachRace.UI.Components
     {
         [Header("UI Elements")]
         [SerializeField] private TextMeshProUGUI playerNameText;
-        [SerializeField] private TextMeshProUGUI teamText;
         [SerializeField] private RawImage playerImage;
-        [SerializeField] private TextMeshProUGUI pingText;
-        [SerializeField] private Button kickButton;
         [SerializeField] private RawImage speakingIndicator;
         [SerializeField] private GamePlayersModel playersModel;
 
@@ -32,21 +29,9 @@ namespace RoachRace.UI.Components
 
         private void Awake()
         {
-            if (kickButton != null)
-            {
-                kickButton.onClick.AddListener(OnKickClicked);
-            }
             if(playersModel == null)
             {
                 Debug.LogError($"[{nameof(PlayerItem)}] PlayersModel reference is not set!", gameObject);
-            }
-        }
-
-        private void OnDestroy()
-        {
-            if (kickButton != null)
-            {
-                kickButton.onClick.RemoveListener(OnKickClicked);
             }
         }
 
@@ -76,32 +61,6 @@ namespace RoachRace.UI.Components
             // Update player name
             playerNameText.text = _player.playerName;
 
-            // Update team
-            teamText.text = _player.team.ToString();
-            teamText.color = _player.team == Team.Ghost ? ghostTeamColor : survivorTeamColor;
-
-            // Update ping if network player is available
-            if (pingText != null && _player.networkPlayer != null)
-            {
-                pingText.text = $"{_player.networkPlayer.GetPing()}ms";
-            }
-            else if (pingText != null)
-            {
-                pingText.text = "-";
-            }
-
-            // Show/hide kick button based on permissions
-            if (kickButton != null && _player.networkPlayer != null)
-            {
-                // Only show kick button if we're the server and it's not the local player
-                bool canKick = _player.networkPlayer.IsServer && !_player.networkPlayer.IsLocalPlayer;
-                kickButton.gameObject.SetActive(canKick);
-            }
-            else if (kickButton != null)
-            {
-                kickButton.gameObject.SetActive(false);
-            }
-
             // Load player image (placeholder for now)
             if (playerImage != null && !string.IsNullOrEmpty(_player.imageUrl))
             {
@@ -127,7 +86,6 @@ namespace RoachRace.UI.Components
             }
             speakingIndicator.gameObject.SetActive(data.isSpeaking);
             Amplitude = data.Amplitude;
-            pingText.text = $"{data.ping}ms";
         }
 
         void OnDisable()
