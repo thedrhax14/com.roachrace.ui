@@ -179,6 +179,20 @@ namespace RoachRace.UI.Models
         public Observable<int> RoundTimeSeconds { get; } = new(0);
 
         /// <summary>
+        /// Match intro (cinematic + pods) toggle.<br></br>
+        /// Purpose: host decides before starting the match whether to play the immersive intro sequence or skip directly to controllers.<br></br>
+        /// Typical usage: UI binds to this observable and the server reads it at match start.
+        /// </summary>
+        public Observable<bool> IntroEnabled { get; } = new(true);
+
+        /// <summary>
+        /// Match intro duration in seconds (clamped to >= 0).<br></br>
+        /// Purpose: controls how long the intro cinematic runs before pods are spawned.<br></br>
+        /// Typical usage: UI binds to this observable and the server reads it at match start.
+        /// </summary>
+        public Observable<float> IntroDurationSeconds { get; } = new(10f);
+
+        /// <summary>
         /// Returns the configured Config options list: 'Custom' + preset names.
         /// </summary>
         public IReadOnlyList<GameSettingsPreset> Presets => presets;
@@ -331,6 +345,26 @@ namespace RoachRace.UI.Models
         public void SetRoundTimeSeconds(int seconds)
         {
             RoundTimeSeconds.Value = Mathf.Max(0, seconds);
+            MarkCustomIfUserEdit();
+        }
+
+        /// <summary>
+        /// Enables/disables the match intro sequence and marks config as Custom if the user edits after applying a preset.
+        /// </summary>
+        /// <param name="enabled">True to enable the intro; false to skip to controllers.</param>
+        public void SetIntroEnabled(bool enabled)
+        {
+            IntroEnabled.Value = enabled;
+            MarkCustomIfUserEdit();
+        }
+
+        /// <summary>
+        /// Sets the match intro duration in seconds (clamped to >= 0) and marks config as Custom if the user edits after applying a preset.
+        /// </summary>
+        /// <param name="seconds">Duration in seconds before pods spawn (0 for immediate).</param>
+        public void SetIntroDurationSeconds(float seconds)
+        {
+            IntroDurationSeconds.Value = Mathf.Max(0f, seconds);
             MarkCustomIfUserEdit();
         }
 
