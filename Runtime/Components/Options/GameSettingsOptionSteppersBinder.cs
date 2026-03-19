@@ -161,6 +161,14 @@ namespace RoachRace.UI.Components.Options
             ApplyLabels();
             BuildAndAssignOptions();
 
+            // Pre-sync optional intro widgets to current model values before attaching widget->model observers.
+            // This prevents default widget selections (index 0) from overwriting the model on first attach.
+            if (introEnabledStepper != null)
+                RenderOnOff(introEnabledStepper, model.IntroEnabled.Value);
+
+            if (introDurationStepper != null)
+                RenderIntroDuration(model.IntroDurationSeconds.Value);
+
             // Widget -> model
             configStepper.SelectedOption.Attach(_configWidgetObserver);
             regenSpeedStepper.SelectedOption.Attach(_regenSpeedWidgetObserver);
