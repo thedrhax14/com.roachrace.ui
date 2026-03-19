@@ -1,6 +1,7 @@
 using System;
 using RoachRace.UI.Core;
 using RoachRace.UI.Models;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -22,6 +23,7 @@ namespace RoachRace.UI.Components
         [Header("Dependencies")]
         [SerializeField] private SpawnSequenceModel spawnSequenceModel;
         [SerializeField] private PlayableDirector playableDirector;
+        [SerializeField] private CinemachineCamera cinemachineCamera;
 
         [Header("Behavior")]
         [Tooltip("If true, forces the PlayableDirector wrap mode to Loop when the cinematic starts.")]
@@ -86,6 +88,8 @@ namespace RoachRace.UI.Components
             playableDirector.time = 0d;
             playableDirector.Evaluate();
             playableDirector.Play();
+            cinemachineCamera.enabled = true;
+            cinemachineCamera.Prioritize();
 
             Debug.Log($"[{nameof(SpawnIntroTimelineController)}] Started intro cinematic Timeline on '{gameObject.name}'", gameObject);
         }
@@ -104,6 +108,8 @@ namespace RoachRace.UI.Components
             playableDirector.Stop();
             playableDirector.time = 0d;
             playableDirector.Evaluate();
+            cinemachineCamera.Priority = -1;
+            cinemachineCamera.enabled = false;
 
             Debug.Log($"[{nameof(SpawnIntroTimelineController)}] Stopped intro cinematic Timeline on '{gameObject.name}'", gameObject);
         }

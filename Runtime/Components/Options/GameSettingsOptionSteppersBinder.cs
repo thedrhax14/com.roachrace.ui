@@ -1,5 +1,6 @@
 using RoachRace.UI.Core;
 using RoachRace.UI.Models;
+using System.Globalization;
 using UnityEngine;
 
 namespace RoachRace.UI.Components.Options
@@ -30,6 +31,13 @@ namespace RoachRace.UI.Components.Options
         [SerializeField] private OptionStepperWidget ectoplasmStepper;
         [SerializeField] private OptionStepperWidget roundTimeStepper;
 
+        [Header("Optional Widgets")]
+        [Tooltip("Optional: binds GameSettingsModel.IntroEnabled.")]
+        [SerializeField] private OptionStepperWidget introEnabledStepper;
+
+        [Tooltip("Optional: binds GameSettingsModel.IntroDurationSeconds.")]
+        [SerializeField] private OptionStepperWidget introDurationStepper;
+
         private bool _suppressWidgetToModel;
 
         private IObserver<string> _configWidgetObserver;
@@ -41,6 +49,8 @@ namespace RoachRace.UI.Components.Options
         private IObserver<string> _winnerCountWidgetObserver;
         private IObserver<string> _ectoplasmWidgetObserver;
         private IObserver<string> _roundTimeWidgetObserver;
+        private IObserver<string> _introEnabledWidgetObserver;
+        private IObserver<string> _introDurationWidgetObserver;
 
         private IObserver<string> _configModelObserver;
         private IObserver<GameSettingsModel.RegenSpeed> _regenSpeedModelObserver;
@@ -51,6 +61,8 @@ namespace RoachRace.UI.Components.Options
         private IObserver<int> _winnerCountModelObserver;
         private IObserver<int> _ectoplasmModelObserver;
         private IObserver<int> _roundTimeModelObserver;
+        private IObserver<bool> _introEnabledModelObserver;
+        private IObserver<float> _introDurationModelObserver;
 
         private void OnValidate()
         {
@@ -87,6 +99,9 @@ namespace RoachRace.UI.Components.Options
             _ectoplasmWidgetObserver = new ActionObserver<string>(value => OnIntSelected(value, model.SetEctoplasm));
             _roundTimeWidgetObserver = new ActionObserver<string>(OnRoundTimeSelected);
 
+            _introEnabledWidgetObserver = new ActionObserver<string>(value => OnBoolSelected(value, model.SetIntroEnabled));
+            _introDurationWidgetObserver = new ActionObserver<string>(value => OnSecondsSelected(value, model.SetIntroDurationSeconds));
+
             _configModelObserver = new ActionObserver<string>(RenderConfigSelection);
             _regenSpeedModelObserver = new ActionObserver<GameSettingsModel.RegenSpeed>(RenderRegenSpeed);
             _regenDelayModelObserver = new ActionObserver<bool>(value => RenderOnOff(regenDelayStepper, value));
@@ -96,6 +111,14 @@ namespace RoachRace.UI.Components.Options
             _winnerCountModelObserver = new ActionObserver<int>(RenderWinnerCount);
             _ectoplasmModelObserver = new ActionObserver<int>(value => RenderInt(ectoplasmStepper, value));
             _roundTimeModelObserver = new ActionObserver<int>(RenderRoundTime);
+
+            _introEnabledModelObserver = new ActionObserver<bool>(value =>
+            {
+                if (introEnabledStepper != null)
+                    RenderOnOff(introEnabledStepper, value);
+            });
+
+            _introDurationModelObserver = new ActionObserver<float>(RenderIntroDuration);
         }
 
         /// <summary>
@@ -113,6 +136,8 @@ namespace RoachRace.UI.Components.Options
             RenameWidgetGameObject(winnerCountStepper, "WinnerCountStepper");
             RenameWidgetGameObject(ectoplasmStepper, "EctoplasmStepper");
             RenameWidgetGameObject(roundTimeStepper, "RoundTimeStepper");
+            RenameWidgetGameObject(introEnabledStepper, "IntroEnabledStepper");
+            RenameWidgetGameObject(introDurationStepper, "IntroDurationStepper");
         }
 
         /// <summary>
@@ -147,6 +172,12 @@ namespace RoachRace.UI.Components.Options
             ectoplasmStepper.SelectedOption.Attach(_ectoplasmWidgetObserver);
             roundTimeStepper.SelectedOption.Attach(_roundTimeWidgetObserver);
 
+            if (introEnabledStepper != null)
+                introEnabledStepper.SelectedOption.Attach(_introEnabledWidgetObserver);
+
+            if (introDurationStepper != null)
+                introDurationStepper.SelectedOption.Attach(_introDurationWidgetObserver);
+
             // Model -> widget
             model.ConfigName.Attach(_configModelObserver);
             model.RegenSpeedSetting.Attach(_regenSpeedModelObserver);
@@ -157,6 +188,9 @@ namespace RoachRace.UI.Components.Options
             model.WinnerCount.Attach(_winnerCountModelObserver);
             model.Ectoplasm.Attach(_ectoplasmModelObserver);
             model.RoundTimeSeconds.Attach(_roundTimeModelObserver);
+
+            model.IntroEnabled.Attach(_introEnabledModelObserver);
+            model.IntroDurationSeconds.Attach(_introDurationModelObserver);
 
             // Initial render (Attach already notifies, but this ensures options were assigned first).
             RenderAll();
@@ -176,6 +210,12 @@ namespace RoachRace.UI.Components.Options
             winnerCountStepper.SetLabel("One Winner");
             ectoplasmStepper.SetLabel("Ectoplasm");
             roundTimeStepper.SetLabel("Round Time");
+
+            if (introEnabledStepper != null)
+                introEnabledStepper.SetLabel("Intro");
+
+            if (introDurationStepper != null)
+                introDurationStepper.SetLabel("Intro Duration");
         }
 
         private void OnDestroy()
@@ -190,6 +230,9 @@ namespace RoachRace.UI.Components.Options
             if (ectoplasmStepper != null) ectoplasmStepper.SelectedOption.Detach(_ectoplasmWidgetObserver);
             if (roundTimeStepper != null) roundTimeStepper.SelectedOption.Detach(_roundTimeWidgetObserver);
 
+            if (introEnabledStepper != null) introEnabledStepper.SelectedOption.Detach(_introEnabledWidgetObserver);
+            if (introDurationStepper != null) introDurationStepper.SelectedOption.Detach(_introDurationWidgetObserver);
+
             if (model == null) return;
 
             model.ConfigName.Detach(_configModelObserver);
@@ -201,6 +244,9 @@ namespace RoachRace.UI.Components.Options
             model.WinnerCount.Detach(_winnerCountModelObserver);
             model.Ectoplasm.Detach(_ectoplasmModelObserver);
             model.RoundTimeSeconds.Detach(_roundTimeModelObserver);
+
+            model.IntroEnabled.Detach(_introEnabledModelObserver);
+            model.IntroDurationSeconds.Detach(_introDurationModelObserver);
         }
 
         private static void ValidateWidget(string fieldName, OptionStepperWidget widget)
@@ -235,6 +281,12 @@ namespace RoachRace.UI.Components.Options
 
                 ectoplasmStepper.SetOptions(model.BuildEctoplasmOptions(), 0);
                 roundTimeStepper.SetOptions(model.BuildRoundTimeOptions(), 0);
+
+                if (introEnabledStepper != null)
+                    introEnabledStepper.SetOptions(new[] { "Off", "On" }, 0);
+
+                if (introDurationStepper != null)
+                    introDurationStepper.SetOptions(model.BuildIntroDurationOptions(), 0);
             }
             finally
             {
@@ -253,6 +305,12 @@ namespace RoachRace.UI.Components.Options
             RenderWinnerCount(model.WinnerCount.Value);
             RenderInt(ectoplasmStepper, model.Ectoplasm.Value);
             RenderRoundTime(model.RoundTimeSeconds.Value);
+
+            if (introEnabledStepper != null)
+                RenderOnOff(introEnabledStepper, model.IntroEnabled.Value);
+
+            if (introDurationStepper != null)
+                RenderIntroDuration(model.IntroDurationSeconds.Value);
         }
 
         private void OnConfigSelected(string selected)
@@ -320,6 +378,15 @@ namespace RoachRace.UI.Components.Options
             SetWidgetSelection(roundTimeStepper, seconds <= 0 ? "Off/Infinite" : seconds.ToString());
         }
 
+        private void RenderIntroDuration(float seconds)
+        {
+            if (introDurationStepper == null)
+                return;
+
+            int s = Mathf.Max(0, Mathf.RoundToInt(seconds));
+            SetWidgetSelection(introDurationStepper, s.ToString());
+        }
+
         private void RenderOnOff(OptionStepperWidget widget, bool enabled)
         {
             SetWidgetSelection(widget, enabled ? "On" : "Off");
@@ -362,6 +429,24 @@ namespace RoachRace.UI.Components.Options
             if (int.TryParse(selected, out int value))
             {
                 setter(value);
+            }
+        }
+
+        private static void OnSecondsSelected(string selected, System.Action<float> setter)
+        {
+            if (setter == null) return;
+
+            if (string.IsNullOrWhiteSpace(selected))
+                return;
+
+            // Accept simple formats like "10" or "10s".
+            string trimmed = selected.Trim();
+            if (trimmed.EndsWith("s", System.StringComparison.OrdinalIgnoreCase))
+                trimmed = trimmed.Substring(0, trimmed.Length - 1);
+
+            if (float.TryParse(trimmed, NumberStyles.Float, CultureInfo.InvariantCulture, out float seconds))
+            {
+                setter(Mathf.Max(0f, seconds));
             }
         }
     }

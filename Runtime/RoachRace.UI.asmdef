@@ -10,7 +10,8 @@
         "RoachRace.Interaction",
         "DissonanceVoip",
         "DissonanceFMOD_Recording",
-        "FishNet.Runtime"
+        "FishNet.Runtime",
+        "Unity.Cinemachine"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

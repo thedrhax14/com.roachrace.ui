@@ -130,6 +130,10 @@ namespace RoachRace.UI.Models
         [Tooltip("Available round times in seconds (excluding Off/Infinite). Typical values: 300, 600, 900, 1200.")]
         [SerializeField] private int[] roundTimeOptionsSeconds = { 300, 600, 900, 1200 };
 
+        [Header("Intro Options")]
+        [Tooltip("Available intro durations in seconds. Typical values: 0, 5, 10, 15.")]
+        [SerializeField] private int[] introDurationOptionsSeconds = { 0, 5, 10, 15 };
+
         private bool _isApplyingPreset;
 
         /// <summary>
@@ -403,6 +407,34 @@ namespace RoachRace.UI.Models
                     if (seconds <= 0) continue;
                     values.Add(seconds.ToString());
                 }
+            }
+
+            return values.ToArray();
+        }
+
+        /// <summary>
+        /// Builds options for match intro duration in seconds.<br></br>
+        /// Typical usage: UI uses this list to populate an option widget controlling <see cref="IntroDurationSeconds"/>.
+        /// </summary>
+        /// <returns>Array of seconds values as strings.</returns>
+        public string[] BuildIntroDurationOptions()
+        {
+            List<string> values = new();
+
+            if (introDurationOptionsSeconds != null)
+            {
+                for (int i = 0; i < introDurationOptionsSeconds.Length; i++)
+                {
+                    int seconds = introDurationOptionsSeconds[i];
+                    if (seconds < 0) continue;
+                    values.Add(seconds.ToString());
+                }
+            }
+
+            if (values.Count == 0)
+            {
+                values.Add("0");
+                values.Add("10");
             }
 
             return values.ToArray();
