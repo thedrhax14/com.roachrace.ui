@@ -58,6 +58,12 @@ namespace RoachRace.UI.Models
             [Tooltip("0 means Off/Infinite. Otherwise time in seconds (e.g., 300, 600, 900, 1200).")]
             [SerializeField] private int roundTimeSeconds;
 
+            [Header("Intro")]
+            [SerializeField] private bool introEnabled = true;
+
+            [Tooltip("Intro duration in seconds before pods spawn.")]
+            [SerializeField] private float introDurationSeconds = 10f;
+
             /// <summary>
             /// Display name used by the Config selector.
             /// </summary>
@@ -102,6 +108,16 @@ namespace RoachRace.UI.Models
             /// Round time in seconds, where 0 means Off/Infinite.
             /// </summary>
             public int PresetRoundTimeSeconds => roundTimeSeconds;
+
+            /// <summary>
+            /// Whether the match intro is enabled in this preset.
+            /// </summary>
+            public bool PresetIntroEnabled => introEnabled;
+
+            /// <summary>
+            /// Match intro duration in seconds in this preset.
+            /// </summary>
+            public float PresetIntroDurationSeconds => introDurationSeconds;
         }
 
         /// <summary>
@@ -255,6 +271,9 @@ namespace RoachRace.UI.Models
                 SetWinnerCount(preset.PresetWinnerCount);
                 SetEctoplasm(preset.PresetEctoplasm);
                 SetRoundTimeSeconds(preset.PresetRoundTimeSeconds);
+
+                SetIntroEnabled(preset.PresetIntroEnabled);
+                SetIntroDurationSeconds(preset.PresetIntroDurationSeconds);
             }
             finally
             {
