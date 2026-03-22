@@ -5,7 +5,7 @@
   "description": "UI components and models using observer pattern for RoachRace game. Provides reactive UI framework with observable data binding.",
   "unity": "2021.3",
   "dependencies": {
-    "com.roachrace.data": "1.1.0",
+    "com.roachrace.data": "1.2.1",
     "com.unity.inputsystem": "1.14.2",
     "com.unity.ugui": "2.0.0"
   },

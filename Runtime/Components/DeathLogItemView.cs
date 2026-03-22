@@ -32,10 +32,7 @@ namespace RoachRace.UI.Components
 
             if (weaponText != null)
             {
-                if (!string.IsNullOrWhiteSpace(entry.WeaponIconKey))
-                    weaponText.text = entry.WeaponIconKey;
-                else
-                    weaponText.text = entry.DamageType.ToString();
+                weaponText.text = string.IsNullOrWhiteSpace(entry.WeaponIconKey) ? "?" : entry.WeaponIconKey;
             }
 
             ApplyAvatar(attackerAvatarImage, entry.Attacker.AvatarUrl);
