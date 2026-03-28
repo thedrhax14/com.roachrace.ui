@@ -57,7 +57,7 @@ namespace RoachRace.UI.Models
         public Observable<bool> IntroEnabled { get; } = new(true);
 
         [Tooltip("Configured intro duration in seconds (as applied on match start).")]
-        public Observable<float> IntroDurationSeconds { get; } = new(10f);
+        public Observable<float> IntroDurationSeconds { get; } = new(1f);
 
         [Tooltip("UTC timestamp in milliseconds when the intro cinematic started (0 means unset/unknown).")]
         public Observable<long> IntroStartTimestampMsUtc { get; } = new(0);
