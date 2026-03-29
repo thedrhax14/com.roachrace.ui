@@ -10,7 +10,7 @@ namespace RoachRace.UI.Models
     [CreateAssetMenu(fileName = "DeathLogModel", menuName = "RoachRace/Models/Death Log Model")]
     public class DeathLogModel : UIModel
     {
-        public readonly Observable<DeathLogEntry> LatestEntry = new Observable<DeathLogEntry>(default);
+        public readonly Observable<DeathLogEntry> LatestEntry = new(default);
 
         public void Publish(DeathLogEntry entry)
         {
