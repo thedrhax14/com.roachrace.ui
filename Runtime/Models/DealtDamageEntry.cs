@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace RoachRace.UI.Models
 {
     /// <summary>
@@ -17,14 +19,16 @@ namespace RoachRace.UI.Models
         /// <param name="targetConnectionId">ClientId of the damaged target owner, or -1 when unknown/non-player.</param>
         /// <param name="targetObjectId">NetworkObjectId of the damaged target, or -1 when unknown.</param>
         /// <param name="targetHealthAfterHit">Resolved target health after the hit was applied.</param>
+        /// <param name="targetWorldPosition">World-space position of the damaged target when the hit was applied.</param>
         /// <param name="isFatal">Whether the hit reduced the target to zero or below.</param>
-        public DealtDamageEntry(int damageAmount, string weaponIconKey, int targetConnectionId, int targetObjectId, int targetHealthAfterHit, bool isFatal)
+        public DealtDamageEntry(int damageAmount, string weaponIconKey, int targetConnectionId, int targetObjectId, int targetHealthAfterHit, Vector3 targetWorldPosition, bool isFatal)
         {
             DamageAmount = damageAmount;
             WeaponIconKey = weaponIconKey;
             TargetConnectionId = targetConnectionId;
             TargetObjectId = targetObjectId;
             TargetHealthAfterHit = targetHealthAfterHit;
+            TargetWorldPosition = targetWorldPosition;
             IsFatal = isFatal;
         }
 
@@ -57,6 +61,12 @@ namespace RoachRace.UI.Models
         /// Typical usage: drive threshold-based attacker confirmation effects.
         /// </summary>
         public int TargetHealthAfterHit { get; }
+
+        /// <summary>
+        /// World-space position of the damaged target when the hit was applied.<br/>
+        /// Typical usage: floating damage text can anchor and drift upward from this position.
+        /// </summary>
+        public Vector3 TargetWorldPosition { get; }
 
         /// <summary>
         /// Whether the hit reduced the target to zero or below.<br/>

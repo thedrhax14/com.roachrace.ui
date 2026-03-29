@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace RoachRace.UI.Models
 {
     /// <summary>
@@ -18,7 +20,9 @@ namespace RoachRace.UI.Models
         /// <param name="weaponIconKey">Optional UI-facing weapon/effect key used for attribution. Empty when not applicable.</param>
         /// <param name="instigatorConnectionId">ClientId of the instigator connection, or -1 for environment/unknown.</param>
         /// <param name="instigatorObjectId">NetworkObjectId of the instigator object, or -1 for environment/unknown.</param>
-        public IncomingDamageEntry(int previousHealth, int currentHealth, int damageAmount, string weaponIconKey, int instigatorConnectionId, int instigatorObjectId)
+        /// <param name="hasSourceWorldPosition">Whether a world-space source position was supplied for this hit.</param>
+        /// <param name="sourceWorldPosition">World-space source position when <paramref name="hasSourceWorldPosition"/> is true.</param>
+        public IncomingDamageEntry(int previousHealth, int currentHealth, int damageAmount, string weaponIconKey, int instigatorConnectionId, int instigatorObjectId, bool hasSourceWorldPosition, Vector3 sourceWorldPosition)
         {
             PreviousHealth = previousHealth;
             CurrentHealth = currentHealth;
@@ -26,6 +30,8 @@ namespace RoachRace.UI.Models
             WeaponIconKey = weaponIconKey;
             InstigatorConnectionId = instigatorConnectionId;
             InstigatorObjectId = instigatorObjectId;
+            HasSourceWorldPosition = hasSourceWorldPosition;
+            SourceWorldPosition = sourceWorldPosition;
         }
 
         /// <summary>
@@ -63,6 +69,18 @@ namespace RoachRace.UI.Models
         /// Typical usage: correlate incoming damage with a tracked projectile, trap, or actor if such a registry exists client-side.
         /// </summary>
         public int InstigatorObjectId { get; }
+
+        /// <summary>
+        /// Whether a world-space source position was supplied for this hit.<br/>
+        /// Typical usage: incoming directional indicators can skip rendering when no source position is available.
+        /// </summary>
+        public bool HasSourceWorldPosition { get; }
+
+        /// <summary>
+        /// World-space source position of the hit when available.<br/>
+        /// Typical usage: compute the damage arc direction relative to the current gameplay camera.
+        /// </summary>
+        public Vector3 SourceWorldPosition { get; }
 
         /// <summary>
         /// Whether the hit reduced health to zero or below.<br/>
