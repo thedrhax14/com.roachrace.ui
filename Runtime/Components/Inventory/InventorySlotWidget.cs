@@ -26,15 +26,31 @@ namespace RoachRace.UI.Components.Inventory
 
         [Header("Slot")]
         [Tooltip("Which inventory slot index this widget represents.")]
-        [SerializeField, Range(0, 8)] private int slotIndex;
+        [SerializeField, Range(0, 9)] private int slotIndex;
 
+        /// <summary>
+        /// Gets the inventory slot index rendered by this widget.<br>
+        /// Typical usage: pair this with a manually positioned inventory slot layout or pie menu slot.<br>
+        /// </summary>
         public int SlotIndex => slotIndex;
 
+        /// <summary>
+        /// Updates the slot index used by this widget.<br>
+        /// Typical usage: call this from editor-time layout code when widgets are auto-assigned to inventory slots.<br>
+        /// </summary>
+        /// <param name="index">Zero-based inventory slot index.</param>
         public void SetSlotIndex(int index)
         {
             slotIndex = index;
         }
 
+        /// <summary>
+        /// Renders the visual state for this inventory slot.<br>
+        /// Typical usage: call after resolving the slot snapshot and icon for the current inventory model.<br>
+        /// </summary>
+        /// <param name="slot">Snapshot of the inventory slot state.</param>
+        /// <param name="icon">Resolved icon for the slot, or null when empty/unresolved.</param>
+        /// <param name="selected">Whether this slot should display its selected indicator.</param>
         public void Render(InventorySlotState slot, Sprite icon, bool selected)
         {
             if (iconImage != null)
