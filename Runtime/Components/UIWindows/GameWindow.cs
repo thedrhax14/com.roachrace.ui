@@ -7,7 +7,9 @@ using UnityEngine.UI;
 namespace RoachRace.UI.Components
 {
     /// <summary>
-    /// Main game HUD window - shown during gameplay
+    /// Main gameplay HUD window that observes <see cref="PlayerStatsModel"/> and renders health/stamina text.<br/>
+    /// Typical usage: place this in the in-game UI, assign the player stats model, and wire the health/stamina text fields so the local HUD updates automatically as the model observables change.<br/>
+    /// Configuration/context: this is owner-local presentation only; it subscribes to the ScriptableObject model and should not contain gameplay-authoritative logic.
     /// </summary>
     public class GameWindow : UIWindow
     {
@@ -23,6 +25,11 @@ namespace RoachRace.UI.Components
         private IObserver<float> _staminaObserver;
         private IObserver<float> _maxStaminaObserver;
 
+        /// <summary>
+        /// Resolves model observers used to keep the HUD text synchronized with <see cref="PlayerStatsModel"/>.<br/>
+        /// Typical usage: Unity invokes this during initialization; the window caches lightweight observers so it can attach and detach cleanly when shown or hidden.<br/>
+        /// Configuration/context: missing model references are logged and leave the window inert rather than throwing, matching the existing HUD window behavior.
+        /// </summary>
         protected override void Awake()
         {
             base.Awake();
@@ -41,6 +48,11 @@ namespace RoachRace.UI.Components
             _maxStaminaObserver = new ActionObserver<float>(_ => OnStaminaChanged(playerStatsModel.Stamina.Value));
         }
 
+        /// <summary>
+        /// Subscribes to the player stats model and pushes the current values into the text fields when the HUD becomes visible.<br/>
+        /// Typical usage: called by the window system when gameplay begins or the HUD is shown again after being hidden.<br/>
+        /// Configuration/context: the observer attachment immediately triggers the latest model values, so the text always renders the current snapshot.
+        /// </summary>
         protected override void OnShow()
         {
             base.OnShow();
@@ -62,6 +74,11 @@ namespace RoachRace.UI.Components
             }
         }
 
+        /// <summary>
+        /// Unsubscribes from the player stats model when the HUD is hidden.<br/>
+        /// Typical usage: called by the window system when gameplay ends or another window takes over the screen.<br/>
+        /// Configuration/context: releasing the model observers prevents stale callbacks while the HUD is not visible.
+        /// </summary>
         protected override void OnHide()
         {
             base.OnHide();
@@ -79,18 +96,40 @@ namespace RoachRace.UI.Components
             }
         }
 
+        /// <summary>
+        /// Updates the health text from the latest model value.<br/>
+        /// Typical usage: invoked whenever the health observable changes or when the HUD is first shown.<br/>
+        /// Configuration/context: renders a current/max pair so the player can see both remaining and total health at a glance.
+        /// </summary>
+        /// <param name="currentHealth">The current health value from the model.</param>
         private void OnHealthChanged(int currentHealth)
         {
+            if (healthText == null || playerStatsModel == null)
+                return;
+
             int maxHealth = playerStatsModel.MaxHealth.Value;
-            if (maxHealth <= 0) maxHealth = 100; // Prevent division by zero
-            healthText.text = $"{currentHealth}";
+            if (maxHealth <= 0)
+                maxHealth = currentHealth > 0 ? currentHealth : 100;
+
+            healthText.text = $"{currentHealth} / {maxHealth}";
         }
 
+        /// <summary>
+        /// Updates the stamina text from the latest model value.<br/>
+        /// Typical usage: invoked whenever the stamina observable changes or when the HUD is first shown.<br/>
+        /// Configuration/context: stamina is displayed as a whole-number current/max pair because the resource is tracked as inventory units.
+        /// </summary>
+        /// <param name="currentStamina">The current stamina value from the model.</param>
         private void OnStaminaChanged(float currentStamina)
         {
+            if (staminaText == null || playerStatsModel == null)
+                return;
+
             float maxStamina = playerStatsModel.MaxStamina.Value;
-            if (maxStamina <= 0) maxStamina = 100f;
-            staminaText.text = $"{Mathf.CeilToInt(currentStamina)}";
+            if (maxStamina <= 0f)
+                maxStamina = currentStamina > 0f ? currentStamina : 100f;
+
+            staminaText.text = $"{Mathf.CeilToInt(currentStamina)} / {Mathf.CeilToInt(maxStamina)}";
         }
     }
 }

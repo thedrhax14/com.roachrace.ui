@@ -18,6 +18,7 @@ namespace RoachRace.UI.Components
         [Header("UI")]
         [SerializeField] private RectTransform container;
         [SerializeField] private DealtDamageFloatingTextItem itemPrefab;
+        [SerializeField] private Animator hitMarkerAnimator;
         [SerializeField] private Canvas targetCanvas;
 
         [Header("Camera")]
@@ -123,6 +124,7 @@ namespace RoachRace.UI.Components
             item.Show(entry, entry.TargetWorldPosition, entryLifetimeSeconds, riseSpeedWorldUnits);
             item.transform.SetAsLastSibling();
             activeOldestFirst.Enqueue(item);
+            hitMarkerAnimator.Play("HitMarker", 0, 0f);
         }
 
         /// <summary>
