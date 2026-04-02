@@ -95,7 +95,7 @@ namespace RoachRace.UI.Components.Weapons
                 for (int i = 0; i < slots.Length; i++)
                 {
                     var s = slots[i];
-                    if (s.IsEmpty) continue;
+                    if (s.ItemId == 0 || s.Count <= 0) continue;
                     if (s.ItemId != ammoId) continue;
                     reserve += s.Count;
                 }

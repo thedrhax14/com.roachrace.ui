@@ -463,7 +463,7 @@ namespace RoachRace.UI.Components.Inventory.PieMenu
                 return null;
             }
 
-            ushort itemId = slot.IsEmpty ? (ushort)0 : slot.ItemId;
+            ushort itemId = slot.ItemId;
             if (!itemDatabase.TryGet(itemId, out var definition) || definition == null)
             {
                 return null;

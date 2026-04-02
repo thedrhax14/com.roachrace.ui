@@ -108,7 +108,7 @@ namespace RoachRace.UI.Components.Inventory
                 InventorySlotState state = (slotIndex >= 0 && slotIndex < slotStates.Length) ? slotStates[slotIndex] : default;
 
                 Sprite icon = null;
-                if (state.IsEmpty)
+                if (state.ItemId == 0)
                 {
                     // Allow a UI placeholder definition for empty slots (ItemDefinition id 0).
                     if (itemDatabase == null)
